@@ -1,0 +1,18 @@
+# Server configurations
+google_sheets:
+  endpoint: "https://script.google.com/macros/s/AKfycbwrXItdeq6D6ZThJN6tMw2XCBFJqYXlwduyO6buM_embQCgniIMgx2GCPtAFWsglzNb/exec"
+  role: "user"
+  password_suffix: "@loveall"
+
+gmail:
+  EmailSenderName: "LoveAll"
+  EmailSenderAddress: "vamsi.anamalamudi@gmai.com"
+  EmailSenderPassword: "vbanynvusbpgqtms"
+
+server:
+  host: "localhost"
+  port: 8001
+  protocal: "http"
+  basepath: "/api/v1"
+  email: "cia@cialabs.tech"
+  password: "Me6airo2oC5caev"
