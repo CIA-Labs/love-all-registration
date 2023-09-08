@@ -7,7 +7,7 @@ google_sheets:
 gmail:
   EmailSenderName: "LoveAll"
   EmailSenderAddress: "vamsi.anamalamudi@gmai.com"
-  EmailSenderPassword: "vbanynvusbpgqtms"
+  EmailSenderPassword: "<PASSWORD>"
 
 server:
   host: "localhost"
