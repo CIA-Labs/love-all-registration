@@ -1,8 +1,11 @@
-module github.com/madeinatria/love-all-registration/m
+module github.com/CIA-Labs/love-all-registration
 
 go 1.21.0
 
-require gopkg.in/yaml.v2 v2.4.0
+require (
+	github.com/jordan-wright/email v4.0.1-0.20210109023952-943e75fe5223+incompatible
+	gopkg.in/yaml.v2 v2.4.0
+)
 
 require (
 	github.com/golang/protobuf v1.5.3 // indirect

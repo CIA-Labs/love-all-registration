@@ -3,6 +3,7 @@ package main
 import (
 	"bytes"
 	"encoding/json"
+	"fmt"
 	"io"
 	"io/ioutil"
 	"log"
@@ -11,7 +12,7 @@ import (
 	"os"
 	"time"
 
-	"github.com/love-all-registration/mail"
+	"github.com/CIA-Labs/love-all-registration/mail"
 	"gopkg.in/yaml.v2"
 )
 
@@ -288,70 +289,12 @@ func createUser(cfg *Config, user UserDetails) (status int) {
 	return result.ID
 }
 
-// func send_mail() {
-// 	// Set your Gmail API credentials (client ID and client secret).
-// 	clientID := "444212066875-jp4aav0pf85nkth1eb2v2i6330ohblj7.apps.googleusercontent.com"
-// 	clientSecret := "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"
-
-// 	// Set the OAuth2 token endpoint and scope.
-// 	oauth2Endpoint := oauth2.Endpoint{
-// 		TokenURL: "https://accounts.google.com/o/oauth2/token",
-// 	}
-// 	oauth2Config := oauth2.Config{
-// 		ClientID:     clientID,
-// 		ClientSecret: clientSecret,
-// 		RedirectURL:  "urn:ietf:wg:oauth:2.0:oob",
-// 		Scopes:       []string{"https://mail.google.com/"},
-// 		Endpoint:     oauth2Endpoint,
-// 	}
-
-// 	// // Obtain an OAuth2 access token.
-// 	// authURL := oauth2Config.AuthCodeURL("state", oauth2.AccessTypeOffline)
-// 	// fmt.Printf("Visit the following URL to obtain an authorization code:\n%v\n", authURL)
-// 	// fmt.Print("Enter the authorization code: ")
-// 	authCode := "vbanynvusbpgqtms"
-// 	fmt.Scan(&authCode)
-
-// 	token, err := oauth2Config.Exchange(oauth2.NoContext, authCode)
-// 	if err != nil {
-// 		log.Fatalf("Error exchanging authorization code: %v", err)
-// 	}
-// 	log.Println(token)
-// 	// SMTP server details for Gmail.
-// 	smtpServer := "smtp.gmail.com"
-// 	smtpPort := 587
-
-// 	// Sender's email address.
-// 	senderEmail := "vamsi.anamalamudi@gmail.com"
-
-// 	// Recipient's email address.
-// 	recipientEmail := "vamsi.a@phonepe.com"
-
-// 	// Email content.
-// 	subject := "Test Email"
-// 	body := "This is a test email sent through Gmail SMTP using OAuth2."
-
-// 	// Authenticate using the access token.
-// 	auth := smtp.PlainAuth("", senderEmail, token.AccessToken, smtpServer)
-
-// 	// Compose the email message.
-// 	message := fmt.Sprintf("To: %s\r\nSubject: %s\r\n\r\n%s", recipientEmail, subject, body)
-
-// 	// Connect to the SMTP server and send the email.
-// 	err = smtp.SendMail(smtpServer+":"+fmt.Sprint(smtpPort), auth, senderEmail, []string{recipientEmail}, []byte(message))
-// 	if err != nil {
-// 		log.Fatalf("Error sending email: %v", err)
-// 	}
-
-// 	fmt.Println("Email sent successfully.")
-// }
-
 func main() {
 	var cfg Config
 	readFile(&cfg)
 
 	// If the file doesn't exist, create it or append to the file
-	file, err := os.OpenFile("love-all-users-onboarding.txt", os.O_APPEND|os.O_CREATE|os.O_WRONLY, 0666)
+	file, err := os.OpenFile("love-all-users-onboarding.log", os.O_APPEND|os.O_CREATE|os.O_WRONLY, 0666)
 	if err != nil {
 		processError(err)
 	}
@@ -422,16 +365,26 @@ func main() {
 				log.Println(response)
 				if status == "nil" {
 					log.Println("Card Number:", response, "created successfully!")
-					sender := mail.NewGmailSender(&cfg.Gmail.EmailSenderName, &cfg.Gmail.EmailSenderAddress, &cfg.Gmail.EmailSenderPassword)
-					subject := "A test email"
-					content := `
-					<h1>Hello world</h1>
-					<p>This is a test message from <a href="http://techschool.guru">Tech School</a></p>
-					`
-					to := []string{"techschool.guru@gmail.com"}
-					attachFiles := []string{"../README.md"}
+					sender := mail.NewGmailSender(cfg.Gmail.EmailSenderName, cfg.Gmail.EmailSenderAddress, cfg.Gmail.EmailSenderPassword)
+					subject := "Welcome to LoveAll Beta: Your Exclusive Membership Has Begun!"
+					content := fmt.Sprintf("<p>Dear %s %s,</p>"+
+						"<p>We are thrilled to welcome you to the LoveAll Beta program and extend our heartfelt gratitude for becoming a part of our exclusive LoveAll membership community. Your decision to join us as a beta user is greatly appreciated, and we are excited to embark on this journey together.</p>"+
+						"<p>Card Number:<h2>%d</h2> </p>"+
+						"<p>Card Type: %s</p>"+
+						"<p>If you have any questions or need assistance at any point, please do not hesitate to contact our support team at <a href=\"mailto:loveall@cialabs.tech\">loveall@cialabs.tech</a></p>"+
+						"<p>Let's make LoveAll Beta an incredible experience together!</p><br>"+
+						"<p>Warm regards,</p>"+
+						"<p>LoveAll Team</p>", user.FirstName, user.LastName, response, user.CardType)
+					// contentt := `
+					// <h1>LoveAll</h1>
+					// <p>Dear %s</p>
+					// <p>PFA E-Card of LoveAll membership</p>
+					// `
+					to := []string{user.EmailId}
+					attachFiles := []string{"README.md"}
 
 					err = sender.SendEmail(subject, content, to, nil, nil, attachFiles)
+					log.Println(err)
 				} else {
 					log.Println("ERROR: Card creation failed!")
 				}

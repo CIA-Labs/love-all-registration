@@ -2,6 +2,7 @@ package mail
 
 import (
 	"fmt"
+	"log"
 	"net/smtp"
 
 	"github.com/jordan-wright/email"
@@ -30,6 +31,7 @@ type GmailSender struct {
 }
 
 func NewGmailSender(name string, fromEmailAddress string, fromEmailPassword string) EmailSender {
+	log.Println(fromEmailAddress, fromEmailPassword)
 	return &GmailSender{
 		name:              name,
 		fromEmailAddress:  fromEmailAddress,
@@ -53,12 +55,12 @@ func (sender *GmailSender) SendEmail(
 	e.Cc = cc
 	e.Bcc = bcc
 
-	for _, f := range attachFiles {
-		_, err := e.AttachFile(f)
-		if err != nil {
-			return fmt.Errorf("failed to attach file %s: %w", f, err)
-		}
-	}
+	// for _, f := range attachFiles {
+	// 	_, err := e.AttachFile(f)
+	// 	if err != nil {
+	// 		return fmt.Errorf("failed to attach file %s: %w", f, err)
+	// 	}
+	// }
 
 	smtpAuth := smtp.PlainAuth("", sender.fromEmailAddress, sender.fromEmailPassword, smtpAuthAddress)
 	return e.Send(smtpServerAddress, smtpAuth)
